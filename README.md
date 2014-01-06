@@ -1,8 +1,8 @@
 # ghAMT
 
-  The GitHub Asset Management Toolkit provides a set of ruby scripts able to manipulate release assets, namely packaged builds that are created through a Continuous Integration system.
+  The GitHub Asset Management Toolkit provides a set of ruby scripts able to manage release assets, namely packaged builds that are created through a Continuous Integration system like Travis, CMake or Jenkins.
 
-  The base use case is a project CI build that generates one or more installable packages, which are then checked for sanity and made available through upload in Github's release area.
+  The base use case is a project's CI build that generates one or more installable packages as it builds. The package(s) are then checked for sanity and made available through upload in Github's release area.
 
 ## Installation
 
@@ -21,7 +21,7 @@ and then execute:
 
 ## Usage
 
-ghamt --current <COMMIT_ID>
+ghamt --current [COMMIT_ID]
 
 ## Contributing
 
