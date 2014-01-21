@@ -21,7 +21,7 @@ class Manager
 
   def initialize params
     @path ||= `pwd`
-    @command ||= params[0] if validate_command params[0]
+    @command ||= validate_command params[0]
     @commit ||= latest_commit @path
     @args ||= params[1..-1]
   end
@@ -29,9 +29,9 @@ class Manager
   def validate_command command
     case command
       when "upload", "manage", "download", "install", "reset", "test"
-        true
+        command
       else
-        false
+        nil
     end
   end
 
