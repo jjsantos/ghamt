@@ -1,3 +1,5 @@
+require 'octokit'
+
 class Manager
 
   def greet
@@ -42,13 +44,30 @@ class Manager
   def execute
     case @command
       when "upload"
-        upload self
+        upload
       when "manage", "download", "install", "reset", "test"
         true
     end
   end
 
-  def upload job
+  def upload
+    set_auth
+    connect
+  end
+
+  def connect
+    raise "no token authentication provided" unless @gh_token
+
+    @client = Octokit::Client.new :access_token => @gh_token
     true
   end
+
+  def set_auth
+    get_gh_token
+  end
+
+  def get_gh_token
+    @gh_token = `git config --global --get github.token`
+  end
+
 end

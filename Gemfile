@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
-gem "github_api"
+gem "octokit", "~> 2.0"
 
 gemspec
