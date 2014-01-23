@@ -15,6 +15,7 @@ class Manager
     puts "path    : #{@path}"
     puts "commit  : #{@commit}"
     puts "args    : #{@args}"
+    puts "username: #{@username}"
   end
 
   def latest_commit path
@@ -59,6 +60,8 @@ class Manager
     raise "no token authentication provided" unless @gh_token
 
     @client = Octokit::Client.new :access_token => @gh_token
+    @username = @client.login
+
     true
   end
 
