@@ -31,7 +31,7 @@ class Manager
 
   def validate_command command
     case command
-      when "upload", "manage", "download", "install", "reset", "test"
+      when "--help", "upload", "manage", "download", "install", "reset", "test"
         command
       else
         nil
@@ -39,11 +39,21 @@ class Manager
   end
 
   def check_values
-    raise "invalid command" unless @command
+    begin
+      puts "No known command given to ghamt: #{@command}. Run 'ghamt --help'"
+      exit
+    end unless @command
+  end
+
+  def help
+    puts "Run: 'ghamt <command>'"
+    puts "Commands are: upload, manage, download, install, reset, test or --help"
   end
 
   def execute
     case @command
+      when "--help"
+        help
       when "upload"
         upload
       when "manage", "download", "install", "reset", "test"
