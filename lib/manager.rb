@@ -3,30 +3,49 @@ require 'octokit'
 class Manager
 
   def greet
-    puts "ghAMT starting"
+    puts "starting"
   end
 
   def quit
-    puts "ghAMT finished!"
+    puts "finished!"
   end
 
   def show_params
-    puts "command : #{@command}"
-    puts "path    : #{@path}"
-    puts "commit  : #{@commit}"
-    puts "args    : #{@args}"
-    puts "username: #{@username}"
+    puts "command       : #{@command}"
+    puts "path          : #{@path}"
+    puts "latest_commit : #{@latest_commit}"
+    puts "args          : #{@args}"
+    puts "username      : #{@username}"
   end
 
   def latest_commit path
     `git log -n 1 --pretty=oneline`.split(" ")[0]
   end
 
+  def tags
+    tags = `git tag -l`
+    tags.split
+  end
+
+  def commit
+    @args.each_cons(2).map {|param, value| value if param == '--commit' }.compact[0]
+  end
+
+  def current_tag_commit
+    return "" unless @tags.include? 'current'
+
+    msg = `git show current | head -n 1`
+    msg.split[1]
+  end
+
   def initialize params
     @path ||= `pwd`
     @command ||= validate_command params[0]
-    @commit ||= latest_commit @path
+    @latest_commit ||= latest_commit @path
     @args ||= params[1..-1]
+    @tags = tags
+    @commit = commit
+    @current_tag_commit = current_tag_commit
   end
 
   def validate_command command
@@ -61,9 +80,33 @@ class Manager
     end
   end
 
+  def create_current_tag
+    current = `git tag current`
+  end
+
+  def add_assets
+    puts 'adding assets'
+  end
+
+  def manage_tags
+    if @tags.include? 'current'
+      rotate_tags unless @current_tag_commit == @commit
+    else
+      puts "no 'current' tag exists, creating..."
+      create_current_tag
+    end
+  end
+
+  def rotate_tags
+    # TO-DO: rotate between 'current' and 'previous' tags
+    puts 'rotated tags'
+  end
+
   def upload
+    manage_tags
     set_auth
     connect
+    add_assets
   end
 
   def connect
@@ -71,8 +114,10 @@ class Manager
 
     @client = Octokit::Client.new :access_token => @gh_token
     @username = @client.login
+  end
 
-    true
+  def get_origin
+    @origin = `git config remote.origin.url`
   end
 
   def set_auth
