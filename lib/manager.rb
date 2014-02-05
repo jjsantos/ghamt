@@ -83,6 +83,7 @@ class Manager
   end
 
   def connect
+    @gh_token = @git.get_gh_token
     raise "no token authentication provided" unless @gh_token
 
     @client = Octokit::Client.new :access_token => @gh_token
@@ -90,11 +91,7 @@ class Manager
   end
 
   def set_auth
-    get_gh_token
-  end
-
-  def get_gh_token
-    @gh_token = `git config --global --get github.token`
+    @git.get_gh_token
   end
 
 end

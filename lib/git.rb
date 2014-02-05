@@ -26,4 +26,8 @@ class Git
     @origin = `git config remote.origin.url`
   end
 
+  def get_gh_token
+    @gh_token = `git config --global --get github.token`
+  end
+
 end
