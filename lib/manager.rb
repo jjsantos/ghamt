@@ -28,6 +28,7 @@ class Manager
     @command ||= validate_command params[0]
     @args ||= params[1..-1]
     @commit = commit
+    @sys_tags = { :current => 'current', :previous => 'previous' }
   end
 
   def validate_command command
@@ -67,12 +68,38 @@ class Manager
   end
 
   def manage_tags
-    if @git.tags.include? 'current'
-      @git.rotate_tags unless @git.current_tag_commit == @commit
-    else
-      puts "no 'current' tag exists, creating..."
-      @git.create_current_tag
-    end
+    rotate_tags unless @git.current_tag_commit == @commit
+  end
+
+  def rotate_tags
+    delete_tag_previous if exists_tag_previous
+    create_tag_current unless exists_tag_current
+    create_tag_alias
+    refresh_tag_current
+  end
+
+  def delete_tag_previous
+    @git.delete_tag @sys_tags[:previous]
+  end
+
+  def exists_tag_previous
+    @git.tags.include? @sys_tags[:previous]
+  end
+
+  def create_tag_current
+    @git.create_tag @sys_tags[:current]
+  end
+
+  def exists_tag_current
+    @git.tags.include? @sys_tags[:current]
+  end
+
+  def create_tag_alias
+    @git.make_tag_alias @sys_tags
+  end
+
+  def refresh_tag_current
+    @git.refresh_tag @sys_tags[:current]
   end
 
   def upload

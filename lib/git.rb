@@ -2,6 +2,7 @@ class Git
 
   def initialize path
     @path = path
+    tags
   end
 
   def tags
@@ -13,13 +14,21 @@ class Git
     current_tag_commit ||= (`git show current | head -n 1`).split[1]
   end
 
-  def create_current_tag
-    `git tag current`
+  def create_tag tag
+    `git tag #{tag}`
   end
 
-  def rotate_tags
-    # TO-DO: rotate between 'current' and 'previous' tags
-    puts 'rotated tags'
+  def delete_tag tag
+    `git tag -d #{tag}`
+  end
+
+  def refresh_tag tag
+    delete_tag tag
+    create_tag tag
+  end
+
+  def make_tag_alias tags
+    `git tag #{tags[:previous]} #{tags[:current]}`
   end
 
   def get_origin
